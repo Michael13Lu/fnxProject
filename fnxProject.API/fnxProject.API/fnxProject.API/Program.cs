@@ -1,8 +1,20 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+	options.Listen(System.Net.IPAddress.Loopback, 7150); // HTTP
+	options.Listen(System.Net.IPAddress.Loopback, 7151, listenOptions =>
+	{
+		listenOptions.UseHttps(); // HTTPS
+	});
+});
 
 builder.Services.AddHttpClient();
 
-// Add services to the container.
+// Add services to the container. 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
