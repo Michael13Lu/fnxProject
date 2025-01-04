@@ -89,46 +89,53 @@ namespace fnxProject.API.Controllers
 			}
 		}
 
-		// הוספת ריפוזיטורי למועדפים
 		[HttpPost("bookmark")]
 		public IActionResult AddBookmark([FromBody] Repository repository)
 		{
+			Console.WriteLine("Session ID: " + HttpContext.Session.Id);
+			Console.WriteLine("Request cookies: " + string.Join(", ", HttpContext.Request.Cookies));
+
 			if (repository == null)
 			{
-				return BadRequest("יש צורך בנתוני ריפוזיטורי.");
+				return BadRequest("Invalid repository data.");
 			}
 
-			// קבלת המועדפים הנוכחיים מהסשן
+			// Копируем текущие закладки из сессии
 			var bookmarksJson = HttpContext.Session.GetString("bookmarkedRepositories");
 			var bookmarks = string.IsNullOrEmpty(bookmarksJson)
 				? new List<Repository>()
 				: JsonSerializer.Deserialize<List<Repository>>(bookmarksJson);
 
-			// בדיקה אם המועדף כבר קיים
 			if (bookmarks.Any(b => b.Id == repository.Id))
 			{
-				return BadRequest("הריפוזיטורי כבר נמצא במועדפים.");
+				return BadRequest("Repository already bookmarked.");
 			}
 
-			// הוספת הריפוזיטורי לרשימת המועדפים
 			bookmarks.Add(repository);
 
-			// שמירת הרשימה המעודכנת בסשן
+			// Сохраняем обновлённый список в сессии
 			HttpContext.Session.SetString("bookmarkedRepositories", JsonSerializer.Serialize(bookmarks));
+
+			Console.WriteLine("Current session data: " + HttpContext.Session.GetString("bookmarkedRepositories"));
 
 			return Ok(bookmarks);
 		}
 
-		// קבלת כל המועדפים
 		[HttpGet("bookmarks")]
 		public IActionResult GetBookmarks()
 		{
-			// קבלת המועדפים מהסשן
-			var bookmarksJson = HttpContext.Session.GetString("bookmarkedRepositories");
-			var bookmarks = string.IsNullOrEmpty(bookmarksJson)
-				? new List<Repository>()
-				: JsonSerializer.Deserialize<List<Repository>>(bookmarksJson);
+			Console.WriteLine("Session ID: " + HttpContext.Session.Id);
+			Console.WriteLine("Request cookies: " + string.Join(", ", HttpContext.Request.Cookies));
 
+			var bookmarksJson = HttpContext.Session.GetString("bookmarkedRepositories");
+			Console.WriteLine("Fetching session data: " + bookmarksJson);
+
+			if (string.IsNullOrEmpty(bookmarksJson))
+			{
+				return Ok(new List<Repository>());
+			}
+
+			var bookmarks = JsonSerializer.Deserialize<List<Repository>>(bookmarksJson);
 			return Ok(bookmarks);
 		}
 

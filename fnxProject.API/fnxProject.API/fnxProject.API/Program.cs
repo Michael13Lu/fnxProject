@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-	options.Listen(System.Net.IPAddress.Loopback, 7150); // HTTP
+	options.Listen(System.Net.IPAddress.Loopback, 7150);
 	options.Listen(System.Net.IPAddress.Loopback, 7151, listenOptions =>
 	{
 		listenOptions.UseHttps(); // HTTPS
@@ -18,9 +18,18 @@ builder.WebHost.ConfigureKestrel(options =>
 
 builder.Services.AddHttpClient();
 
-// Add services to the container. 
+builder.Services.AddCors(options =>
+{
+	options.AddPolicy("AllowSpecificOrigin", builder =>
+	{
+		builder.WithOrigins("http://localhost:4200")
+			   .AllowAnyHeader()
+			   .AllowAnyMethod()
+			   .AllowCredentials();
+	});
+});
+
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(options =>
@@ -32,7 +41,7 @@ builder.Services.AddSwaggerGen(options =>
 		Scheme = "Bearer",
 		BearerFormat = "JWT",
 		In = ParameterLocation.Header,
-		Description = "Введите токен в формате: Bearer {токен}"
+		Description = "הכנס את הטוקן בפורמט: Bearer {טוקן}"
 	});
 
 	options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -45,21 +54,24 @@ builder.Services.AddSwaggerGen(options =>
 					Type = ReferenceType.SecurityScheme,
 					Id = "Bearer"
 				}
-			}, 
+			},
 			new string[] {}
 		}
 	});
 });
 
 builder.Services.AddDistributedMemoryCache();
+
 builder.Services.AddSession(options =>
 {
 	options.IdleTimeout = TimeSpan.FromMinutes(60);
 	options.Cookie.HttpOnly = true;
 	options.Cookie.IsEssential = true;
+	options.Cookie.SameSite = SameSiteMode.None;
+	options.Cookie.SecurePolicy = CookieSecurePolicy.None;
 });
 
-// Добавление JWT аутентификации
+// הוספת אימות JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 	.AddJwtBearer(options =>
 	{
@@ -78,37 +90,33 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 		{
 			OnAuthenticationFailed = context =>
 			{
-				Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+				Console.WriteLine($"אימות נכשל: {context.Exception.Message}");
 				return Task.CompletedTask;
 			},
 			OnTokenValidated = context =>
 			{
-				Console.WriteLine($"Token validated for: {context.Principal.Identity.Name}");
+				Console.WriteLine($"טוקן אומת עבור: {context.Principal.Identity.Name}");
 				return Task.CompletedTask;
 			}
 		};
 	});
 
-
-
 var app = builder.Build();
 
-app.UseSession();
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection(); 
-app.UseCors(policy =>
-	policy.AllowAnyOrigin()
-		  .AllowAnyHeader()
-		  .AllowAnyMethod());
+app.UseHttpsRedirection();
 
-app.UseAuthentication(); // Добавлено для JWT
+app.UseCors("AllowSpecificOrigin");
+
+app.UseSession();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

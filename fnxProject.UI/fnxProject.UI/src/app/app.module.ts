@@ -9,11 +9,14 @@ import { RepositoriesComponent } from './repositories/repositories.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { LoginComponent } from './login/login.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     AppComponent,
-    RepositoriesComponent
+    RepositoriesComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -23,6 +26,7 @@ import { MatCardModule } from '@angular/material/card';
     MatTableModule, 
     MatButtonModule,
     MatCardModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

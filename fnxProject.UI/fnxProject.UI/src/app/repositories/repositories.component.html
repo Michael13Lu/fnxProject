@@ -1,6 +1,31 @@
 <div class="container mt-4">
   <h1 class="text-center mb-4">Repositories</h1>
-  <div class="row">
+
+  <!-- Поле ввода для поиска -->
+  <div class="mb-4 text-center">
+    <input 
+      type="text" 
+      class="form-control d-inline-block w-50" 
+      [(ngModel)]="searchQuery" 
+      placeholder="Enter repository name..."
+      (keydown.enter)="searchRepositories()" 
+    />
+    <button 
+      class="btn btn-primary ml-2"
+      (click)="searchRepositories()"
+    >
+      Search
+    </button>
+  </div>
+
+  <!-- Кнопки для переключения -->
+  <div class="d-flex justify-content-center mb-4">
+    <button class="btn btn-primary me-3" (click)="showSection('gallery')">Show Gallery</button>
+    <button class="btn btn-secondary" (click)="showSection('bookmarks')">Show Bookmarks</button>
+  </div>
+
+  <!-- Gallery Repositories -->
+  <div *ngIf="activeSection === 'gallery'" class="row">
     <div class="col-md-4 mb-4" *ngFor="let repo of repositories">
       <div class="card h-100">
         <a [href]="repo.htmlUrl" target="_blank">
@@ -8,14 +33,32 @@
         </a>
         <div class="card-body">
           <h5 class="card-title">{{ repo.name }}</h5>
-          <!-- <p class="card-text">
-            This is a repository created by the owner. You can bookmark it for quick access.
-          </p> -->
           <button
             class="btn btn-primary"
             (click)="bookmark(repo)"
           >
             {{ repo.isBookmarked ? 'Bookmarked' : 'Bookmark' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bookmarks -->
+  <div *ngIf="activeSection === 'bookmarks'" class="row">
+    <h2>Bookmarks</h2>
+    <div class="col-md-4 mb-4" *ngFor="let bookmark of bookmarks">
+      <div class="card h-100">
+        <a [href]="bookmark.htmlUrl" target="_blank">
+          <img [src]="bookmark.ownerAvatarUrl" class="card-img-top" alt="{{ bookmark.name }}" />
+        </a>
+        <div class="card-body">
+          <h5 class="card-title">{{ bookmark.name }}</h5>
+          <button
+            class="btn btn-danger"
+            (click)="removeBookmark(bookmark)"
+          >
+            Remove
           </button>
         </div>
       </div>

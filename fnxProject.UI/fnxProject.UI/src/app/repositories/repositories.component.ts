@@ -7,35 +7,70 @@ import { Repository } from './models/repository.model';
   templateUrl: './repositories.component.html',
   styleUrls: ['./repositories.component.css']
 })
-export class RepositoriesComponent implements OnInit{
-  
+export class RepositoriesComponent implements OnInit {
   repositories: Repository[] = [];
-  displayedColumns: string[] = ['name', 'ownerAvatar', 'bookmark'];
-  query: string = 'test';
+  bookmarks: Repository[] = [];
+  errorMessage: string = '';
+  searchQuery: string = ''; 
+  isLoading: boolean = false;
+  activeSection: string = 'gallery';
 
-  constructor(private repositoryService: RepositoryService){}
+  constructor(private repositoryService: RepositoryService) {}
 
   ngOnInit(): void {
-    this.loadRepositories();
+    this.loadBookmarks();
   }
 
-  loadRepositories(): void {
-    this.repositoryService.searchRepositories(this.query).subscribe({
+  // מעבר בין החלקים
+  showSection(section: string): void {
+    this.activeSection = section;
+  }
+
+  // חיפוש מאגרי מידע
+  searchRepositories(): void {
+    if (!this.searchQuery.trim()) {
+      this.errorMessage = 'Please enter a repository name.';
+      return;
+    }
+
+    this.isLoading = true;
+    this.repositoryService.searchRepositories(this.searchQuery).subscribe({
       next: (data) => {
         this.repositories = data;
-        console.log('Repositories loaded:', data);
+        this.errorMessage = this.repositories.length ? '' : 'No repositories found.';
+        this.isLoading = false;
       },
-      error: (error) => {
-        console.error('Error loading repositories:', error);
-      },
-      complete: () => {
-        console.log('Repository loading complete.');
-      },
+      error: (err) => {
+        this.errorMessage = `Error searching repositories: ${err.message}`;
+        this.isLoading = false;
+      }
     });
   }
 
+  // הוספה/הסרה של סימניה
   bookmark(repository: Repository): void {
     repository.isBookmarked = !repository.isBookmarked;
-    console.log(`${repository.name} bookmarked:`, repository.isBookmarked);
+
+    if (repository.isBookmarked) {
+      this.bookmarks.push(repository); // Добавляем в закладки
+    } else {
+      this.removeBookmark(repository); // Удаляем из закладок
+    }
+  }
+
+  // הסרת סימניה
+  removeBookmark(repository: Repository): void {
+    this.bookmarks = this.bookmarks.filter((b) => b.id !== repository.id);
+  }
+  // טעינת סימניות
+  loadBookmarks(): void {
+    this.repositoryService.getBookmarks().subscribe({
+      next: (data) => {
+        this.bookmarks = data;
+      },
+      error: (err) => {
+        console.error('Error loading bookmarks:', err);
+      }
+    });
   }
 }
