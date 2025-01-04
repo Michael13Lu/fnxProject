@@ -1,4 +1,5 @@
 ﻿using fnxProject.API.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using System.Text.Json;
@@ -7,6 +8,7 @@ namespace fnxProject.API.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	[Authorize] // דורש JWT עבור גישה לכל המתודות
 	public class RepositoryController : ControllerBase
 	{
 		private readonly IHttpClientFactory httpClientFactory;
@@ -16,6 +18,7 @@ namespace fnxProject.API.Controllers
 			this.httpClientFactory = httpClientFactory;
 		}
 
+		// חיפוש
 		[HttpGet("search")]
 		public async Task<IActionResult> SearchRepositories(
 			[FromQuery] string query,
@@ -25,7 +28,7 @@ namespace fnxProject.API.Controllers
 		{
 			if (string.IsNullOrWhiteSpace(query))
 			{
-				return BadRequest("Query parameter is required.");
+				return BadRequest("יש צורך בפרמטר של שאילתה.");
 			}
 
 			try
@@ -33,7 +36,7 @@ namespace fnxProject.API.Controllers
 				var client = httpClientFactory.CreateClient();
 				client.DefaultRequestHeaders.Add("User-Agent", "fnxProject.API");
 
-				// Формируем строку запроса
+				// יצירת מחרוזת השאילתה
 				var queryString = $"https://api.github.com/search/repositories?q={query}";
 
 				if (!string.IsNullOrWhiteSpace(language))
@@ -55,7 +58,7 @@ namespace fnxProject.API.Controllers
 
 				if (!response.IsSuccessStatusCode)
 				{
-					return StatusCode((int)response.StatusCode, "Error fetching data from GitHub.");
+					return StatusCode((int)response.StatusCode, "שגיאה בקבלת נתונים מ-GitHub.");
 				}
 
 				var content = await response.Content.ReadAsStringAsync();
@@ -70,6 +73,8 @@ namespace fnxProject.API.Controllers
 					{
 						Id = Guid.NewGuid(),
 						Name = item.GetProperty("name").GetString(),
+						HtmlUrl = item.GetProperty("html_url").GetString(),
+						Description = item.GetProperty("description").GetString(),
 						OwnerAvatarUrl = item.GetProperty("owner").GetProperty("avatar_url").GetString(),
 						IsBookmarked = false
 					});
@@ -79,37 +84,74 @@ namespace fnxProject.API.Controllers
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"Error in SearchRepositories: {ex.Message}");
-				return StatusCode(500, "An error occurred while processing your request.");
+				Console.WriteLine($"שגיאה ב-SearchRepositories: {ex.Message}");
+				return StatusCode(500, "אירעה שגיאה בעת עיבוד הבקשה.");
 			}
 		}
 
-
+		// הוספת ריפוזיטורי למועדפים
 		[HttpPost("bookmark")]
-		public IActionResult AddBookmark([FromBody] object repository)
+		public IActionResult AddBookmark([FromBody] Repository repository)
 		{
 			if (repository == null)
 			{
-				return BadRequest("Repository data is required.");
+				return BadRequest("יש צורך בנתוני ריפוזיטורי.");
 			}
 
-			// Пример сохранения в сессии.
-			HttpContext.Session.SetString("bookmarkedRepository", repository.ToString());
+			// קבלת המועדפים הנוכחיים מהסשן
+			var bookmarksJson = HttpContext.Session.GetString("bookmarkedRepositories");
+			var bookmarks = string.IsNullOrEmpty(bookmarksJson)
+				? new List<Repository>()
+				: JsonSerializer.Deserialize<List<Repository>>(bookmarksJson);
 
-			return Ok("Repository bookmarked successfully.");
+			// בדיקה אם המועדף כבר קיים
+			if (bookmarks.Any(b => b.Id == repository.Id))
+			{
+				return BadRequest("הריפוזיטורי כבר נמצא במועדפים.");
+			}
+
+			// הוספת הריפוזיטורי לרשימת המועדפים
+			bookmarks.Add(repository);
+
+			// שמירת הרשימה המעודכנת בסשן
+			HttpContext.Session.SetString("bookmarkedRepositories", JsonSerializer.Serialize(bookmarks));
+
+			return Ok(bookmarks);
 		}
 
+		// קבלת כל המועדפים
 		[HttpGet("bookmarks")]
 		public IActionResult GetBookmarks()
 		{
-			var bookmarks = HttpContext.Session.GetString("bookmarkedRepository");
+			// קבלת המועדפים מהסשן
+			var bookmarksJson = HttpContext.Session.GetString("bookmarkedRepositories");
+			var bookmarks = string.IsNullOrEmpty(bookmarksJson)
+				? new List<Repository>()
+				: JsonSerializer.Deserialize<List<Repository>>(bookmarksJson);
 
-			if (string.IsNullOrEmpty(bookmarks))
+			return Ok(bookmarks);
+		}
+
+		// מחיקת מועדף
+		[HttpDelete("bookmark/{id}")]
+		public IActionResult RemoveBookmark(Guid id)
+		{
+			// קבלת המועדפים הנוכחיים מהסשן
+			var bookmarksJson = HttpContext.Session.GetString("bookmarkedRepositories");
+			if (string.IsNullOrEmpty(bookmarksJson))
 			{
-				return Ok("No bookmarks found.");
+				return NotFound("לא נמצאו מועדפים.");
 			}
 
-			return Content(bookmarks, "application/json");
+			var bookmarks = JsonSerializer.Deserialize<List<Repository>>(bookmarksJson);
+
+			// מחיקת המועדף לפי ID
+			var updatedBookmarks = bookmarks.Where(b => b.Id != id).ToList();
+
+			// שמירת הרשימה המעודכנת בסשן
+			HttpContext.Session.SetString("bookmarkedRepositories", JsonSerializer.Serialize(updatedBookmarks));
+
+			return Ok(updatedBookmarks);
 		}
 	}
 }

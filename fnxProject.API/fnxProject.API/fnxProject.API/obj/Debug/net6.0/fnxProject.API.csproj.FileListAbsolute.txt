@@ -30,3 +30,11 @@ D:\GIT\fnxProject\fnxProject.API\fnxProject.API\fnxProject.API\obj\Debug\net6.0\
 D:\GIT\fnxProject\fnxProject.API\fnxProject.API\fnxProject.API\obj\Debug\net6.0\fnxProject.API.pdb
 D:\GIT\fnxProject\fnxProject.API\fnxProject.API\fnxProject.API\obj\Debug\net6.0\fnxProject.API.genruntimeconfig.cache
 D:\GIT\fnxProject\fnxProject.API\fnxProject.API\fnxProject.API\obj\Debug\net6.0\ref\fnxProject.API.dll
+D:\GIT\fnxProject\fnxProject.API\fnxProject.API\fnxProject.API\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\GIT\fnxProject\fnxProject.API\fnxProject.API\fnxProject.API\bin\Debug\net6.0\Microsoft.IdentityModel.Abstractions.dll
+D:\GIT\fnxProject\fnxProject.API\fnxProject.API\fnxProject.API\bin\Debug\net6.0\Microsoft.IdentityModel.JsonWebTokens.dll
+D:\GIT\fnxProject\fnxProject.API\fnxProject.API\fnxProject.API\bin\Debug\net6.0\Microsoft.IdentityModel.Logging.dll
+D:\GIT\fnxProject\fnxProject.API\fnxProject.API\fnxProject.API\bin\Debug\net6.0\Microsoft.IdentityModel.Protocols.dll
+D:\GIT\fnxProject\fnxProject.API\fnxProject.API\fnxProject.API\bin\Debug\net6.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+D:\GIT\fnxProject\fnxProject.API\fnxProject.API\fnxProject.API\bin\Debug\net6.0\Microsoft.IdentityModel.Tokens.dll
+D:\GIT\fnxProject\fnxProject.API\fnxProject.API\fnxProject.API\bin\Debug\net6.0\System.IdentityModel.Tokens.Jwt.dll

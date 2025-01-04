@@ -1,1 +1,24 @@
-<p>repositories works!</p>
+<div class="container mt-4">
+  <h1 class="text-center mb-4">Repositories</h1>
+  <div class="row">
+    <div class="col-md-4 mb-4" *ngFor="let repo of repositories">
+      <div class="card h-100">
+        <a [href]="repo.htmlUrl" target="_blank">
+          <img [src]="repo.ownerAvatarUrl" class="card-img-top" alt="{{ repo.name }}" />
+        </a>
+        <div class="card-body">
+          <h5 class="card-title">{{ repo.name }}</h5>
+          <!-- <p class="card-text">
+            This is a repository created by the owner. You can bookmark it for quick access.
+          </p> -->
+          <button
+            class="btn btn-primary"
+            (click)="bookmark(repo)"
+          >
+            {{ repo.isBookmarked ? 'Bookmarked' : 'Bookmark' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
