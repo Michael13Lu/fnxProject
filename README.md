@@ -82,6 +82,5 @@ This will start the Angular application on `http://localhost:4200`.
 ---
 
 ## Additional Notes
-- Make sure you have the latest versions of Node.js, npm, Angular CLI, and .NET installed on your machine.
 - For any issues, open a ticket in the GitHub repository.
 
