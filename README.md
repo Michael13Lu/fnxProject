@@ -32,9 +32,6 @@ You will create a GitHub repositories search page using their API.
 5. **Bookmark Screen**  
    - Add a screen to display all bookmarked repositories.
 
-6. **Upload Project**  
-   - When the project is complete, upload it to GitHub.
-
 ---
 
 ## How to Run
