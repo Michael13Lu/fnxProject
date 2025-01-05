@@ -41,20 +41,20 @@ You will create a GitHub repositories search page using their API.
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_PROJECT_NAME.git
-cd YOUR_PROJECT_NAME
+git clone https://github.com/Michael13Lu/fnxProject.git
+cd fnxProject
 ```
 
 ### 2. Install Dependencies
 For the Angular frontend:
 ```bash
-cd frontend
+cd fnxProject\fnxProject.UI\fnxProject.UI
 npm install
 ```
 
 For the .NET backend:
 ```bash
-cd ../backend
+cd fnxProject\fnxProject.API\fnxProject.API\
 dotnet restore
 ```
 
@@ -64,14 +64,14 @@ dotnet restore
 
 ### 4. Run the Backend
 ```bash
-cd backend
+cd fnxProject\fnxProject.API\fnxProject.API\
 dotnet run
 ```
 This will start the Web API server on `http://localhost:5000`.
 
 ### 5. Run the Frontend
 ```bash
-cd ../frontend
+cd fnxProject\fnxProject.UI\fnxProject.UI
 ng serve
 ```
 This will start the Angular application on `http://localhost:4200`.
@@ -81,19 +81,6 @@ This will start the Angular application on `http://localhost:4200`.
 - Log in using the following credentials:
   - Username: `admin`
   - Password: `admin`
-
-### 7. Build for Production
-To build the Angular application for production:
-```bash
-cd frontend
-ng build --prod
-```
-
-To publish the backend:
-```bash
-cd ../backend
-dotnet publish -c Release
-```
 
 ---
 
