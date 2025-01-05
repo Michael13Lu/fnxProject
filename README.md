@@ -64,7 +64,7 @@ dotnet restore
 cd fnxProject\fnxProject.API\fnxProject.API\
 dotnet run
 ```
-This will start the Web API server on `http://localhost:5000`.
+This will start the Web API server on `https://localhost:7151`.
 
 ### 5. Run the Frontend
 ```bash
