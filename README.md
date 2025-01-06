@@ -64,7 +64,7 @@ dotnet restore
 cd fnxProject\fnxProject.API\fnxProject.API\fnxProject.API
 dotnet run
 ```
-This will start the Web API server on `https://localhost:7151](https://127.0.0.1:7151/swagger/index.html`.
+This will start the Web API server on `https://localhost:7151/swagger/index.html`.
 
 ### 5. Run the Frontend
 ```bash
