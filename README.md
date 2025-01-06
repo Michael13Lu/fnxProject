@@ -51,7 +51,7 @@ npm install
 
 For the .NET backend:
 ```bash
-cd fnxProject\fnxProject.API\fnxProject.API\
+cd fnxProject\fnxProject.API\fnxProject.API\fnxProject.API
 dotnet restore
 ```
 
@@ -61,7 +61,7 @@ dotnet restore
 
 ### 4. Run the Backend
 ```bash
-cd fnxProject\fnxProject.API\fnxProject.API\
+cd fnxProject\fnxProject.API\fnxProject.API\fnxProject.API
 dotnet run
 ```
 This will start the Web API server on `https://localhost:7151`.
